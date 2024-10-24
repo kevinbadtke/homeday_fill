@@ -1,7 +1,7 @@
 {
-  "name": "homeday_fill",
+  "name": "puppeteer-fill-form",
   "version": "1.0.0",
-  "description": "",
+  "description": "A project to automate form filling using Puppeteer",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
