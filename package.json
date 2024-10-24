@@ -1,7 +1,7 @@
 {
-  "name": "puppeteer-fill-form",
+  "name": "puppeteer-webservice",
   "version": "1.0.0",
-  "description": "A project to automate form filling using Puppeteer",
+  "description": "A Puppeteer web service to fill forms and automate tasks",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
