@@ -1,31 +1,42 @@
-const express = require("express");
-const puppeteer = require("puppeteer");
+const express = require('express');
+const puppeteer = require('puppeteer');
 
 const app = express();
-app.use(express.json());
 
-app.post("/puppeteer-run", async (req, res) => {
-  const { url, postCode } = req.body; // Daten von Zapier
+app.get('/fill_form', async (req, res) => {
+  const url = req.query.url || 'https://www.homeday.de/de/preisatlas/';
+  const zipCode = req.query.zip || '67549';
 
   try {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
     const page = await browser.newPage();
-    await page.goto(url, { waitUntil: "networkidle2" });
 
-    // Füge hier den Puppeteer-Code hinzu, um die Website zu manipulieren
-    await page.type("input[name='postcode']", postCode); // Beispiel für die Eingabe eines Postcodes
-    await page.click("button[type='submit']"); // Beispiel für Button-Klick
+    await page.goto(url, { waitUntil: 'networkidle2' });
 
-    await page.waitForTimeout(3000); // Wartezeit zum Laden der Seite
+    // Fill form (assuming there's an input field with a specific selector)
+    await page.type('input[name="postcode"]', zipCode);
+
+    // Click button (assuming there's a submit button with a specific selector)
+    await page.click('button[type="submit"]');
+
+    // Wait for the results page to load
+    await page.waitForNavigation();
+
+    // Get the final URL or result
+    const result = await page.url();
+
     await browser.close();
 
-    res.status(200).json({ message: "Puppeteer execution successful" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Puppeteer execution failed", error });
+    res.json({ message: 'Form submitted successfully', result });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error submitting form');
   }
 });
 
-app.listen(3000, () => {
-  console.log("Puppeteer server is running on port 3000");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
